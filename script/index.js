@@ -11,7 +11,20 @@ const removeActive = () => {
   lessonButtons.forEach((btn) => btn.classList.remove("btn-active"));
 };
 
+const manageSpinner = (isLoading) => {
+  const spinner = document.getElementById("spinner");
+
+  if (isLoading) {
+    spinner.classList.remove("hidden");
+  } else {
+    spinner.classList.add("hidden");
+  }
+};
+
+
 const loadLevelWord = (id) => {
+
+  manageSpinner(true); 
   const url = `https://openapi.programming-hero.com/api/level/${id}`;
   fetch(url)
     .then((res) => res.json())
@@ -20,8 +33,12 @@ const loadLevelWord = (id) => {
       const clickBtn = document.getElementById(`lesson-btn-${id}`);
       clickBtn.classList.add("btn-active");
       displayloadLevelWord(data.data);
+       manageSpinner(false);
     })
-}
+    .catch(() => {
+      manageSpinner(false); 
+    });
+};
 
 const loadWordDetail = async (id) => {
   const url = `https://openapi.programming-hero.com/api/word/${id}`;
@@ -57,11 +74,16 @@ const displayWordDetails = (word) => {
     `;
   document.getElementById("word_modal").showModal();
 };
+
+
 displayloadLevelWord = (words) => {
   const wordContainer = document.getElementById("word-container");
   wordContainer.innerHTML = "";
 
   if (words.length == 0) {
+
+    manageSpinner(false);
+
     wordContainer.innerHTML = `
     <div
         class="text-center  col-span-full rounded-xl py-10 space-y-6 font-bangla"
